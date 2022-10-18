@@ -1,13 +1,6 @@
 import tweepy
 import config
-
-# config = configparser.ConfigParser()
-# config.read('config.ini')
-
-# apiKey = config['twitter']['apiKey']
-# apiKeySecret = config['twitter']['apiKeySecret']
-# accessToken = config['twitter']['accessToken']
-# accessTokenSecret = config['twitter']['accessTokenSecret']
+import pandas as pd
 
 # Functions
 def getClient():
@@ -19,11 +12,22 @@ def getClient():
             
     return client
 
-def getUserInfo():
+def getUserInfo(handle):
     client = getClient()
-    user = client.get_user(username = 'jessejames_____')
+    user = client.get_user(username = handle)
     return user.data.id
 
+def getTweetReplies(artist_handle, tweetID):
+    repliesArray = []
+
+    for reply in tweepy.Cursor(api.search_tweets, q = 'to:{}'.format(artist_handle), since_id = tweetID).items(50):
+        if hasattr(reply, 'in_reply_to_status_id_str'):
+            if reply.in_reply_to_status_id == tweetID:
+                repliesArray.append(reply)
+
+# Tuple of Handles
+testHandles = tuple()
+testHandles = ('jessejames_____', 'arlenelmao')
 
 # Authentication
 auth = tweepy.OAuthHandler(config.apiKey, config.apiKeySecret)
@@ -33,15 +37,18 @@ api = tweepy.API(auth)
 
 # Get Client and User
 client = getClient()
-user = getUserInfo()
+# user = getUserInfo()
 
+columns = ['Name', 'Handle', 'Type', 'Tweet Body']
 
-tweets = client.get_users_tweets(user)
-print(tweets)
-# user = 'jessejames_____'
-# limit = 100
+# Use pagination to get user tweets
+for handle in testHandles:
+    user = getUserInfo(handle)
+    paginator = tweepy.Paginator(client.get_users_tweets, user, exclude = 'retweets',
+                                 max_results = 100)
 
-# tweets = api.get_users_tweets(user)
-
-# for tweet in tweets:
-#     print(tweet.full_text)
+    for page in paginator:
+        #print(page)
+        for tweet in page.data:
+            replies = getTweetReplies(handle, tweet.id)
+            print(replies)

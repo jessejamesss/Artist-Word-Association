@@ -35,7 +35,6 @@ client = getClient()
 # Create columns for csv file
 artistColumns = ['Name', 'Handle', 'Username', 'Artist ID', 'Type', 'Tweet ID', 'Tweet Text']
 artistTweetsData = []
-# mentionsColumns = ['RTA Name', 'RTA Handle', 'RTA Username', 'RTA ID', 'Handle', 'Username', 'ID', 'Type', 'Tweet ID', 'Tweet Text']
 mentionsColumns = ['RTA Name', 'RTA Handle', 'RTA Username', 'RTA ID', 'Type', 'Tweet ID', 'Tweet Text']
 artistMentionsData = []
 

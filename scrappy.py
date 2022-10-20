@@ -8,7 +8,8 @@ def getClient():
                        consumer_key = config.apiKey,
                        consumer_secret = config.apiKeySecret,
                        access_token = config.accessToken,
-                       access_token_secret = config.accessTokenSecret)
+                       access_token_secret = config.accessTokenSecret,
+                       wait_on_rate_limit = True)
             
     return client
 
@@ -34,7 +35,8 @@ client = getClient()
 # Create columns for csv file
 artistColumns = ['Name', 'Handle', 'Username', 'Artist ID', 'Type', 'Tweet ID', 'Tweet Text']
 artistTweetsData = []
-mentionsColumns = ['RTA Name', 'RTA Handle', 'RTA Username', 'RTA ID', 'Handle', 'Username', 'ID', 'Type', 'Tweet ID', 'Tweet Text']
+# mentionsColumns = ['RTA Name', 'RTA Handle', 'RTA Username', 'RTA ID', 'Handle', 'Username', 'ID', 'Type', 'Tweet ID', 'Tweet Text']
+mentionsColumns = ['RTA Name', 'RTA Handle', 'RTA Username', 'RTA ID', 'Type', 'Tweet ID', 'Tweet Text']
 artistMentionsData = []
 
 # Use pagination to get user tweets
@@ -72,16 +74,13 @@ for key in artistDictionary:
             mentionID = mention.id
             mentionText = mention.text
 
-            mentionData = client.get_tweet(511651662461952001, expansions='author_id', 
+            mentionData = client.get_tweet(mentionID, expansions='author_id', 
                                            user_fields=['id','name', 'username'])
 
             mentions = mentionData.includes['users']
+            print(mentions)
 
-            mentionUsername = mentionData.includes['users'].name
-            mentionHandle = mentionData.includes['users'].username
-            mentionUserID = mentionData.includes['users'].id
-
-            artistMentionsData.append([artistName, artistHandle, artistUsername, artistID, mentionHandle, mentionUsername, mentionUserID, type, mentionID, mentionText])
+            artistMentionsData.append([artistName, artistHandle, artistUsername, artistID, type, mentionID, mentionText])
 
 artist_df = pd.DataFrame(artistTweetsData, columns=artistColumns)
 mentions_df = pd.DataFrame(artistMentionsData, columns=mentionsColumns)

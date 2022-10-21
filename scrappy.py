@@ -21,7 +21,13 @@ def getUserInfo(handle):
 
 
 # Dictionary of artist name and their Twitter handle
-artistDictionary = {'Jesse James' : 'jessejames_____', 'Arlene' : 'arlenelmao'}
+import csv
+reader = csv.reader(open('test.csv', 'r'))
+artistDictionary = {}
+for row in reader:
+   k, v = row
+   artistDictionary[k] = v
+# artistDictionary = {'Jesse James' : 'jessejames_____', 'Arlene' : 'arlenelmao'}
 
 # Authentication
 auth = tweepy.OAuthHandler(config.apiKey, config.apiKeySecret)
@@ -86,5 +92,4 @@ mentions_df = pd.DataFrame(artistMentionsData, columns=mentionsColumns)
 
 artist_df.to_csv('artist_tweets.csv')
 mentions_df.to_csv('artist_mentions.csv')
-
 

@@ -22,7 +22,7 @@ def getUserInfo(handle):
 
 # Dictionary of artist name and their Twitter handle
 import csv
-reader = csv.reader(open('test.csv', 'r'))
+reader = csv.reader(open('ArtistList.csv', 'r'))
 artistDictionary = {}
 for row in reader:
    k, v = row
@@ -52,7 +52,9 @@ for key in artistDictionary:
     artistUsername = user.data.name
     artistID = user.data.id
     type = 0
+    print('Start Collecting artist tweets:' + artistName)
 
+    
     tweetsPaginator = tweepy.Paginator(client.get_users_tweets, artistID, exclude = 'retweets',
                                        max_results = 100)
 
@@ -62,6 +64,7 @@ for key in artistDictionary:
             tweetText = tweet.text
 
             artistTweetsData.append([artistName, artistHandle, artistUsername, artistID, type, tweetID, tweetText])
+    print('Done Collecting Artist tweets:' + artistName)
 
 for key in artistDictionary:
     user = getUserInfo(artistDictionary[key])
@@ -70,7 +73,7 @@ for key in artistDictionary:
     artistUsername = user.data.name
     artistID = user.data.id
     type = 1
-    
+    print('Start Collecting Artist tweets replies:' + artistName)
     mentionsPaginator = tweepy.Paginator(client.get_users_mentions, artistID, 
                                          max_results = 100)
 
@@ -83,13 +86,13 @@ for key in artistDictionary:
                                            user_fields=['id','name', 'username'])
 
             mentions = mentionData.includes['users']
-            print(mentions)
 
             artistMentionsData.append([artistName, artistHandle, artistUsername, artistID, type, mentionID, mentionText])
+
+    print('Done Collecting Artist tweets replies:' + artistName)
 
 artist_df = pd.DataFrame(artistTweetsData, columns=artistColumns)
 mentions_df = pd.DataFrame(artistMentionsData, columns=mentionsColumns)
 
 artist_df.to_csv('artist_tweets.csv')
 mentions_df.to_csv('artist_mentions.csv')
-

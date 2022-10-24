@@ -19,9 +19,9 @@ def getUserInfo(handle):
 
     return user
 
-
 # Dictionary of artist name and their Twitter handle
 import csv
+from csv import writer
 reader = csv.reader(open('ArtistList.csv', 'r'))
 artistDictionary = {}
 for row in reader:
@@ -45,6 +45,7 @@ mentionsColumns = ['RTA Name', 'RTA Handle', 'RTA Username', 'RTA ID', 'Type', '
 artistMentionsData = []
 
 # Use pagination to get user tweets
+
 for key in artistDictionary:
     user = getUserInfo(artistDictionary[key])
     artistName = key
@@ -63,8 +64,16 @@ for key in artistDictionary:
             tweetID = tweet.id
             tweetText = tweet.text
 
-            artistTweetsData.append([artistName, artistHandle, artistUsername, artistID, type, tweetID, tweetText])
+            # artistTweetsData.append([artistName, artistHandle, artistUsername, artistID, type, tweetID, tweetText])
+            artistTweetsData = [artistName, artistHandle, artistUsername, artistID, type, tweetID, tweetText]
+            with open('artist_tweets.csv', 'a',newline='', encoding = "utf-8") as f_object:
+                writer_object = writer(f_object)
+                writer_object.writerow(artistTweetsData)
+                f_object.close()
     print('Done Collecting Artist tweets:' + artistName)
+
+# artist_df = pd.DataFrame(artistTweetsData, columns=artistColumns)
+# artist_df.to_csv('artist_tweets.csv')
 
 for key in artistDictionary:
     user = getUserInfo(artistDictionary[key])
@@ -87,12 +96,13 @@ for key in artistDictionary:
 
             mentions = mentionData.includes['users']
 
-            artistMentionsData.append([artistName, artistHandle, artistUsername, artistID, type, mentionID, mentionText])
+            artistMentionsData = [artistName, artistHandle, artistUsername, artistID, type, mentionID, mentionText]
+            with open('artist_mentions.csv', 'a',newline='', encoding = "utf-8") as f_object:
+                writer_object = writer(f_object)
+                writer_object.writerow(artistMentionsData)
+                f_object.close()
 
     print('Done Collecting Artist tweets replies:' + artistName)
 
-artist_df = pd.DataFrame(artistTweetsData, columns=artistColumns)
-mentions_df = pd.DataFrame(artistMentionsData, columns=mentionsColumns)
-
-artist_df.to_csv('artist_tweets.csv')
-mentions_df.to_csv('artist_mentions.csv')
+# mentions_df = pd.DataFrame(artistMentionsData, columns=mentionsColumns)
+# mentions_df.to_csv('artist_mentions.csv')
